@@ -11,47 +11,57 @@
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
     <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        html,
-        body {
+        html {
             height: 100%;
         }
 
-        * {
+
+        body {
             font-family: sans-serif;
-            font-size: 16px;
-            margin: 0%;
-            padding: 0%;
+            font-size: 12px;
+            color: #ccc;
         }
 
-        .big-box {}
-
-        #draggable {
+        #container {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             position: absolute;
+            width: 700px;
+            height: 800px;
+            background: lightcoral;
+            z-index: -5;
+            border: 1px solid #ccc;
+            box-shadow: 5px 5px 13px #f7f7f7;
 
         }
 
-        #draggable2 {
-            position: absolute;
+        #container-up {
+            width: 700px;
+            height: 400px;
+            background: rgb(242, 255, 232);
+            position: relative;
+        }
 
+        #container-down {
+            border-top: 1px dashed #ccc;
+            width: 700px;
+            height: 400px;
+            background: rgb(255, 222, 227);
+            position: relative;
+            z-index: -2;
         }
 
         .box {
             box-sizing: border-box;
-            width: 150px;
-            height: 150px;
+            width: 100px;
+            height: 100px;
             background: white;
-            border: 1px solid #ddd;
+            border: 1px solid #ccc;
             padding: 0.5em;
-        }
-
-        .box-drop {
-            box-sizing: border-box;
-            width: 200px;
-            height: 200px;
-            background: white;
-            border: 1px solid #ddd;
-            padding: 0.5em;
+            position: absolute;
         }
 
         #droppable {
@@ -60,76 +70,124 @@
             left: 50%;
             transform: translate(-50%, -50%);
             z-index: -1;
-            transition: 0.2s;
-
+            transition: 0.5s;
         }
 
-        .happy {
-            background: lawngreen;
+        .hover {
+            background: rgb(255, 251, 251);
+        }
+
+        .inner-hover {
+            background: rgb(251, 255, 252);
         }
 
         .correct {
-            background: lightblue;
+            background: rgb(239, 251, 255);
         }
     </style>
 
 </head>
 
 <body>
-    <div id="draggable" class="box">
-        <p>Drag me around</p>
+    <div id="container">
+        <div id="container-up"></div>
+        <div id="container-down"></div>
     </div>
-    <div id="draggable2" class="box">
-        <p>Drag me around</p>
-    </div>
-    <div id="droppable" class="box-drop">
-        <p>Drop here</p>
-    </div>
+
     <script>
-        $("#draggable").draggable({
-            scroll: false,
-            snap: '#droppable',
-            revert: "invalid",
-            cursor: 'move',
-            cursorAt: { top: 75, left: 75, },
-            // 當抓取時，處理function
-            drag: function () {
-                $("#draggable").css('top', '0%')
-                $("#draggable").css('left', '0%')
-                $("#draggable").css('transform', 'translate(0%, 0%)')
-                $("#draggable").css('transition', '0s')
+
+        // 在container內連續創建，draggable&droppable，並且給圖。
+        // 當drop成功後，創建一個class，當該class數量==貼紙數量就跳出獲勝。
+        let flag = true
+        for (let i = 0; i < 3; i++) {
+            $(`<div>drag-box${i}</div>`).attr('id', `draggable${i}`).attr('class', 'box').appendTo('#container-up').draggable({
+                scroll: false,
+                snap: `#droppable${i}`,
+                containment: "parent.parent",
+                revert: "invalid",
+                cursor: 'move',
+                cursorAt: { top: 50, left: 50, },
+                drag: function () {
+                    $(`draggable${i}`).css('top', `${i * 30}%`)
+                    $(`draggable${i}`).css('left', '0%')
+                    $(`draggable${i}`).css('transform', 'translate(0%, 0%)')
+                    $(`draggable${i}`).css('transition', '0s')
+                }
+            });
+            $(`#draggable${i}`).css('top', `${i * 30}%`)
+            $(`#draggable${i}`).css('left', '0%')
+            $(`#draggable${i}`).css('transform', 'translate(0%, 0%)')
+            $(`#draggable${i}`).css('transition', '0s')
+
+
+
+            $(`<div>drop-box${i}</div>`).attr('id', `droppable${i}`).attr('class', 'box').appendTo('#container-down').droppable({
+                accept: `#draggable${i}`,
+                classes: {
+                    "ui-droppable-active": "hover",
+                    "ui-droppable-hover": "inner-hover"
+                },
+                drop: function () {
+                    $(`#draggable${i}`).addClass('sticker')
+                    $(`#draggable${i}`).css('top', `${i * 30 + 100}%`)
+                    $(`#draggable${i}`).css('left', '0%')
+                    $(`#draggable${i}`).css('transform', 'translate(0%, 0%)')
+                    $(`#draggable${i}`).css('transition', '0.5s')
+                    $(`#draggable${i}`).draggable("destroy");
+                    $(this).addClass("correct").find("p").html("Dropped!");
+                }
+            });
+
+            $(`#droppable${i}`).css('top', `${i * 30}%`)
+            $(`#droppable${i}`).css('left', '0%')
+
+        }
+
+        let timer = setInterval(() => {
+            console.log(($('.sticker').length));
+            if ($('.sticker').length == 3 && flag) {
+                Swal.fire({
+                    title: 'WIN',
+                    text: `You are winner`,
+                })
+                flag = false
             }
-        })
-        $("#draggable2").draggable({
-            containment: "parent",
-            snap: '#droppable',
-            revert: "invalid",
-            cursor: 'move',
-            cursorAt: { top: 75, left: 75, },
-            // 當抓取時，處理function
-            drag: function () {
-                $("#draggable2").css('top', '0%')
-                $("#draggable2").css('left', '0%')
-                $("#draggable2").css('transform', 'translate(0%, 0%)')
-                $("#draggable2").css('transition', '0s')
-            }
-        })
-        $("#droppable").droppable({
-            accept: "#draggable2",
-            classes: {
-                "ui-droppable-active": "happy",
-                "ui-droppable-hover": "ui-state-hover"
-            },
-            // 當可以放時，處理function
-            drop: function () {
-                $("#draggable2").css('top', '50%')
-                $("#draggable2").css('left', '50%')
-                $("#draggable2").css('transform', 'translate(-50%, -50%)')
-                $("#draggable2").css('transition', '0.5s')
-                $("#draggable2").draggable("destroy");
-                $(this).addClass("correct").find("p").html("Dropped!");
-            }
-        });
+        }, 2000)
+
+
+        // $("#draggable").draggable({
+        //     scroll: false,
+        //     containment: "parent",
+        //     snap: '#droppable',
+        //     revert: "invalid",
+        //     cursor: 'move',
+        //     cursorAt: { top: 75, left: 75, },
+        //     // 當抓取時，處理function
+        //     drag: function () {
+        //         $("#draggable").css('top', '0%')
+        //         $("#draggable").css('left', '0%')
+        //         $("#draggable").css('transform', 'translate(0%, 0%)')
+        //         $("#draggable").css('transition', '0s')
+
+        //     }
+        // })
+
+        // $("#droppable").droppable({
+        //     accept: "#draggable2",
+        //     classes: {
+        //         "ui-droppable-active": "hover",
+        //         "ui-droppable-hover": "ui-state-hover"
+        //     },
+        //     // 當可以放時，處理function
+        //     drop: function () {
+        //         $("#draggable2").css('top', '50%')
+        //         $("#draggable2").css('left', '50%')
+        //         $("#draggable2").css('transform', 'translate(-50%, -50%)')
+        //         $("#draggable2").css('transition', '0.5s')
+        //         $("#draggable2").draggable("destroy");
+        //         $(this).addClass("correct").find("p").html("Dropped!");
+        //     }
+        // });
 
     </script>
 </body>
