@@ -22,6 +22,11 @@
             font-family: sans-serif;
             font-size: 12px;
             color: #ccc;
+            overflow: hidden;
+            background: url(./game_images/v957-nunny-11.jpg);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
         #container {
@@ -31,37 +36,75 @@
             position: absolute;
             width: 700px;
             height: 800px;
-            background: lightcoral;
+            background: #fff3ea;
             z-index: -5;
-            border: 1px solid #ccc;
-            box-shadow: 5px 5px 13px #f7f7f7;
-
+            /* outline: 1px solid #ccc; */
+            box-shadow: 5px 5px 5px #ece7e7;
+            box-sizing: border-box;
         }
 
         #container-up {
-            width: 700px;
-            height: 400px;
-            background: rgb(242, 255, 232);
+            width: 100%;
+            height: 50%;
+            background: #fff3ea;
+            background: white;
             position: relative;
         }
 
         #container-down {
-            border-top: 1px dashed #ccc;
-            width: 700px;
-            height: 400px;
-            background: rgb(255, 222, 227);
+            /* border-top: 1px dashed #ccc; */
+            width: 100%;
+            height: 50%;
+            background-image: linear-gradient(135deg, #7db0ab 25%, #e1ecec 25%, #e1ecec 50%, #7db0ab 50%, #7db0ab 75%, #e1ecec 75%);
+            background-size: 100px 100px;
             position: relative;
             z-index: -2;
         }
 
-        .box {
-            box-sizing: border-box;
-            width: 100px;
-            height: 100px;
-            background: white;
-            border: 1px solid #ccc;
-            padding: 0.5em;
+        #container span {
+            top: 1%;
+            left: 50%;
+            transform: translate(-50%, 0%);
             position: absolute;
+            font-size: 22px;
+            font-weight: bolder;
+            color: #333;
+            z-index: 10;
+
+        }
+
+        #white {
+            width: 97%;
+            height: 97%;
+            background: white;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            position: absolute;
+            background: lawngreen;
+            background: white;
+            z-index: -5;
+        }
+
+        .box {
+            width: 170px;
+            height: 170px;
+            background: url(./game_images/1.png);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            outline: 1px solid #ccc;
+            position: absolute;
+            z-index: 5;
+        }
+
+        .ball {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: rgb(70, 78, 146);
+            position: absolute;
+            z-index: 2;
         }
 
         #droppable {
@@ -74,15 +117,40 @@
         }
 
         .hover {
-            background: rgb(255, 251, 251);
+            background: #e1ecec;
         }
 
         .inner-hover {
-            background: rgb(251, 255, 252);
+            background: #7db0ab;
+            transition: 0.2s;
         }
 
         .correct {
             background: rgb(239, 251, 255);
+        }
+
+        #cute-paste {
+            position: fixed;
+            width: 300px;
+            height: 160px;
+            border-radius: 48%;
+            border: 15px double white;
+
+            right: 4%;
+            bottom: 8%;
+            background: #7db0ab;
+            transform: rotate(-4deg);
+            display: flex;
+            flex-flow: column wrap;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #cute-paste span {
+            /* background: lawngreen; */
+            text-align: center;
+            font-size: 36px;
+            color: white;
         }
     </style>
 
@@ -90,8 +158,16 @@
 
 <body>
     <div id="container">
+        <span>Who goes to the party?</span>
+        <div id="container-down">
+            <div id="white"></div>
+        </div>
         <div id="container-up"></div>
-        <div id="container-down"></div>
+
+    </div>
+    <div id="cute-paste">
+        <span>Cut and</span>
+        <span>Paste</span>
     </div>
 
     <script>
@@ -99,28 +175,35 @@
         // 在container內連續創建，draggable&droppable，並且給圖。
         // 當drop成功後，創建一個class，當該class數量==貼紙數量就跳出獲勝。
         let flag = true
-        for (let i = 0; i < 3; i++) {
+        let num = 0
+        const color_set = ['#ff7563', '#feda66', '#8fd1cf', '#66b57e']
+        for (let i = 0; i < 8; i++) {
+
+
+            // ---------------------------drag---------------------------
             $(`<div>drag-box${i}</div>`).attr('id', `draggable${i}`).attr('class', 'box').appendTo('#container-up').draggable({
                 scroll: false,
                 snap: `#droppable${i}`,
                 containment: "parent.parent",
                 revert: "invalid",
                 cursor: 'move',
-                cursorAt: { top: 50, left: 50, },
+                cursorAt: { top: 85, left: 85 },
                 drag: function () {
-                    $(`draggable${i}`).css('top', `${i * 30}%`)
-                    $(`draggable${i}`).css('left', '0%')
-                    $(`draggable${i}`).css('transform', 'translate(0%, 0%)')
-                    $(`draggable${i}`).css('transition', '0s')
                 }
             });
-            $(`#draggable${i}`).css('top', `${i * 30}%`)
-            $(`#draggable${i}`).css('left', '0%')
+            if (i >= 4) {
+                $(`#draggable${i}`).css('top', '55%')
+                $(`#draggable${i}`).css('left', `${(i % 4) * 25}%`)
+            } else {
+                $(`#draggable${i}`).css('top', '5%')
+                $(`#draggable${i}`).css('left', `${(i % 4) * 25}%`)
+            }
             $(`#draggable${i}`).css('transform', 'translate(0%, 0%)')
             $(`#draggable${i}`).css('transition', '0s')
+            $(`#draggable${i}`).css('background', `url(./game_images/${i}.png)`)
 
 
-
+            // ---------------------------drop---------------------------
             $(`<div>drop-box${i}</div>`).attr('id', `droppable${i}`).attr('class', 'box').appendTo('#container-down').droppable({
                 accept: `#draggable${i}`,
                 classes: {
@@ -129,65 +212,57 @@
                 },
                 drop: function () {
                     $(`#draggable${i}`).addClass('sticker')
-                    $(`#draggable${i}`).css('top', `${i * 30 + 100}%`)
-                    $(`#draggable${i}`).css('left', '0%')
+                    if (i >= 4) {
+                        $(`#draggable${i}`).css('top', '-45%')
+                        $(`#draggable${i}`).css('left', `${(i % 4) * 25}%`)
+                    } else {
+                        $(`#draggable${i}`).css('top', '-95%')
+                        $(`#draggable${i}`).css('left', `${(i % 4) * 25}%`)
+                    }
                     $(`#draggable${i}`).css('transform', 'translate(0%, 0%)')
                     $(`#draggable${i}`).css('transition', '0.5s')
                     $(`#draggable${i}`).draggable("destroy");
                     $(this).addClass("correct").find("p").html("Dropped!");
                 }
             });
+            if (i >= 4) {
+                $(`#droppable${i}`).css('top', '55%')
+                $(`#droppable${i}`).css('left', `${(i % 4) * 25}%`)
+            } else {
+                $(`#droppable${i}`).css('top', '5%')
+                $(`#droppable${i}`).css('left', `${(i % 4) * 25}%`)
+            }
+        }
+        for (i = 0; i < 8; i++) {
+            // ---------------------------ball---------------------------
+            $(`<div></div>`).attr('id', `ball${i}`).attr('class', 'ball').appendTo('#container-up')
 
-            $(`#droppable${i}`).css('top', `${i * 30}%`)
-            $(`#droppable${i}`).css('left', '0%')
+            num = Math.floor(Math.random() * 81) + 10;
 
+            $(`#ball${i}`).css('top', `${num}%`)
+
+            num = Math.floor(Math.random() * 81) + 10;
+
+            $(`#ball${i}`).css('left', `${num}%`)
+            console.log(color_set[i]);
+            $(`#ball${i}`).css('background', color_set[i % 4])
         }
 
         let timer = setInterval(() => {
-            console.log(($('.sticker').length));
-            if ($('.sticker').length == 3 && flag) {
+            if ($('.sticker').length == 8 && flag) {
                 Swal.fire({
-                    title: 'WIN',
-                    text: `You are winner`,
+                    title: 'Good Job!',
+                    text: `You're a winner`,
+                    imageUrl: './game_images/v734-toon-41.jpg',
+                    imageWidth: 350,
+                    imageHeight: 350,
+                    imageAlt: 'Animal Party',
+                    confirmButtonColor: '#7db0ab',
+                    padding: '0.75rem'
                 })
                 flag = false
             }
         }, 2000)
-
-
-        // $("#draggable").draggable({
-        //     scroll: false,
-        //     containment: "parent",
-        //     snap: '#droppable',
-        //     revert: "invalid",
-        //     cursor: 'move',
-        //     cursorAt: { top: 75, left: 75, },
-        //     // 當抓取時，處理function
-        //     drag: function () {
-        //         $("#draggable").css('top', '0%')
-        //         $("#draggable").css('left', '0%')
-        //         $("#draggable").css('transform', 'translate(0%, 0%)')
-        //         $("#draggable").css('transition', '0s')
-
-        //     }
-        // })
-
-        // $("#droppable").droppable({
-        //     accept: "#draggable2",
-        //     classes: {
-        //         "ui-droppable-active": "hover",
-        //         "ui-droppable-hover": "ui-state-hover"
-        //     },
-        //     // 當可以放時，處理function
-        //     drop: function () {
-        //         $("#draggable2").css('top', '50%')
-        //         $("#draggable2").css('left', '50%')
-        //         $("#draggable2").css('transform', 'translate(-50%, -50%)')
-        //         $("#draggable2").css('transition', '0.5s')
-        //         $("#draggable2").draggable("destroy");
-        //         $(this).addClass("correct").find("p").html("Dropped!");
-        //     }
-        // });
 
     </script>
 </body>
