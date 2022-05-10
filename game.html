@@ -38,7 +38,7 @@
             height: 800px;
             background: #fff3ea;
             z-index: -5;
-            /* outline: 1px solid #ccc; */
+            outline: 2px solid rgb(221, 230, 230);
             box-shadow: 5px 5px 5px #ece7e7;
             box-sizing: border-box;
         }
@@ -46,13 +46,11 @@
         #container-up {
             width: 100%;
             height: 50%;
-            background: #fff3ea;
             background: white;
             position: relative;
         }
 
         #container-down {
-            /* border-top: 1px dashed #ccc; */
             width: 100%;
             height: 50%;
             background-image: linear-gradient(135deg, #7db0ab 25%, #e1ecec 25%, #e1ecec 50%, #7db0ab 50%, #7db0ab 75%, #e1ecec 75%);
@@ -62,7 +60,7 @@
         }
 
         #container span {
-            top: 1%;
+            top: 2%;
             left: 50%;
             transform: translate(-50%, 0%);
             position: absolute;
@@ -70,18 +68,15 @@
             font-weight: bolder;
             color: #333;
             z-index: 10;
-
         }
 
         #white {
             width: 97%;
             height: 97%;
-            background: white;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             position: absolute;
-            background: lawngreen;
             background: white;
             z-index: -5;
         }
@@ -89,11 +84,9 @@
         .box {
             width: 170px;
             height: 170px;
-            background: url(./game_images/1.png);
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            outline: 1px solid #ccc;
             position: absolute;
             z-index: 5;
         }
@@ -126,7 +119,7 @@
         }
 
         .correct {
-            background: rgb(239, 251, 255);
+            /* background: rgb(239, 251, 255); */
         }
 
         #cute-paste {
@@ -147,7 +140,6 @@
         }
 
         #cute-paste span {
-            /* background: lawngreen; */
             text-align: center;
             font-size: 36px;
             color: white;
@@ -181,7 +173,7 @@
 
 
             // ---------------------------drag---------------------------
-            $(`<div>drag-box${i}</div>`).attr('id', `draggable${i}`).attr('class', 'box').appendTo('#container-up').draggable({
+            $(`<div></div>`).attr('id', `draggable${i}`).attr('class', 'box').appendTo('#container-up').draggable({
                 scroll: false,
                 snap: `#droppable${i}`,
                 containment: "parent.parent",
@@ -200,15 +192,15 @@
             }
             $(`#draggable${i}`).css('transform', 'translate(0%, 0%)')
             $(`#draggable${i}`).css('transition', '0s')
-            $(`#draggable${i}`).css('background', `url(./game_images/${i}.png)`)
+            $(`#draggable${i}`).css('background-image', `url('./game_images/${i}.png')`)
 
 
             // ---------------------------drop---------------------------
-            $(`<div>drop-box${i}</div>`).attr('id', `droppable${i}`).attr('class', 'box').appendTo('#container-down').droppable({
+            $(`<div></div>`).attr('id', `droppable${i}`).attr('class', 'box').appendTo('#container-down').droppable({
                 accept: `#draggable${i}`,
                 classes: {
-                    "ui-droppable-active": "hover",
-                    "ui-droppable-hover": "inner-hover"
+                    // "ui-droppable-active": "hover",
+                    // "ui-droppable-hover": "inner-hover"
                 },
                 drop: function () {
                     $(`#draggable${i}`).addClass('sticker')
@@ -232,6 +224,7 @@
                 $(`#droppable${i}`).css('top', '5%')
                 $(`#droppable${i}`).css('left', `${(i % 4) * 25}%`)
             }
+            $(`#droppable${i}`).css('background-image', `url('./game_images/${i}B.png')`)
         }
         for (i = 0; i < 8; i++) {
             // ---------------------------ball---------------------------
